@@ -6,11 +6,11 @@
 
 In my day to day job I am working a web developer. In most companies in Berlin that means working on a Mac. Which is not too bad, a lot of the terminal tools are available for macOS as well which is great. What is less great is that it's not so easy to replace window manager on the newer versions of macOS, but I don't want to say good bye to keyboard driven tiling window managers like i3 and bspwm. There are two main options that I have tried:
 
-    To install for example bspwm one needs XQuartz, it's possible to set it up but then it works only with X11 apps, not native mac ones. I also could not get X11 apps to render properly on retina screens
+To install for example bspwm one needs XQuartz, it's possible to set it up but then it works only with X11 apps, not native mac ones. I also could not get X11 apps to render properly on retina screens
 
 [reddit thread on installing bspwm](https://www.reddit.com/r/unixporn/comments/2jkf9z/osx_bspwm_i_cant_get_over_this_integration/clcjjfv/)
 
-    An alternative is to use apps that run alongside standard macOS window manager, things like Amethyst and Yabai. They modify the position and size of the windows, but they don't replace the management so it can be clunky and slow sometimes. I can however recommend Yabai as an ok option for daily use.
+An alternative is to use apps that run alongside standard macOS window manager, things like Amethyst and Yabai. They modify the position and size of the windows, but they don't replace the management so it can be clunky and slow sometimes. I can however recommend Yabai as an ok option for daily use.
 
 [amethyst](https://ianyh.com/amethyst/)
 [yabai](https://github.com/koekeishiya/yabai)
