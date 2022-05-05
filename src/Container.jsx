@@ -4,12 +4,7 @@ import styled from 'styled-components'
 import { config } from './config'
 import Box from './Box'
 
-const {
-    margin,
-    topBarHeight,
-    containerHeight,
-    containerWidth
-} = config
+const { margin, topBarHeight, containerHeight, containerWidth } = config
 
 const Container = styled.div`
   padding: ${margin}px;
@@ -20,50 +15,53 @@ const Container = styled.div`
   display: grid; 
   gap: ${margin}px;
   grid-template-areas: 
-    ${(props) => (props.template)}; 
+    ${(props) => props.template};
+    background-image: url('./v.jpg');
 `
 
 const getNewTemplate = () => {
-    const map = []
+  const map = []
 
-    for (let y = 0; y < containerHeight; y++) {
-        map.push(new Array(containerWidth).fill('.'))
-    }
+  for (let y = 0; y < containerHeight; y++) {
+    map.push(new Array(containerWidth).fill('.'))
+  }
 
-    return map
+  return map
 }
 
 const generateAreaTemplating = (boxes) => {
-    const template = getNewTemplate()
+  const template = getNewTemplate()
 
-    boxes.forEach((box) => {
-        for (let y = box.top; y < box.top + box.height; y++ ) {
-            for (let x = box.left; x < box.left + box.width; x++) {
-                template[y][x] = box.id
-            }
+  boxes
+    .filter((box) => !box.float)
+    .forEach((box) => {
+      for (let y = box.top; y < box.top + box.height; y++) {
+        for (let x = box.left; x < box.left + box.width; x++) {
+          template[y][x] = box.id
         }
+      }
     })
 
-    return template.map(row => '"' + row.join(' ') + '"').join('\n')
+  console.log(template)
+
+  return template.map((row) => '"' + row.join(' ') + '"').join('\n')
 }
 
-const selectBoxes = (state) => state.boxes
+const Component = (props) => {
+  const boxes = useSelector(props.boxesSelector)
+  const [template, setTemplate] = useState(generateAreaTemplating(boxes))
 
-const Component = () => {
-    const boxes = useSelector(selectBoxes)
-    const [template, setTemplate] = useState(generateAreaTemplating(boxes))
+  useEffect(() => {
+    setTemplate(generateAreaTemplating(boxes))
+  }, [boxes])
 
-    useEffect(() => {
-        setTemplate(generateAreaTemplating(boxes))
-    }, [boxes])
-
-    return (
-        <Container template={template}>
-            {boxes.map(box => (
-                <Box key={box.id} box={box} />
-            ))}
-        </Container>
-    )
+  return (
+    <Container template={template}>
+      {boxes.map((box) => (
+        <Box key={box.id} box={box} />
+      ))}
+    </Container>
+  )
 }
 
 export default Component

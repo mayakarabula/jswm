@@ -1,139 +1,213 @@
-import { findIndex } from 'lodash-es';
-import { v4 as uuid } from 'uuid';
-import { config } from './config';
+import { findIndex } from 'lodash-es'
+import { v4 as uuid } from 'uuid'
+import { config } from './config'
 
-const {
-    containerHeight,
-    containerWidth,
-    split
-} = config
+const { containerHeight, containerWidth, split } = config
 
-const initialState = ({
-    boxes: [],
-    active: null,
-    split: split,
-    template: ''
-})
+const initialState = {
+  boxes: [],
+  active: null,
+  split: split,
+  template: '',
+}
 
 const types = {
-    ADD_BOX: 'ADD_BOX',
-    REMOVE_BOX: 'REMOVE_BOX',
-    SET_ACTIVE: 'SET_ACTIVE',
-    SET_NEXT_ACTIVE: 'SET_NEXT_ACTIVE',
-    SET_PREV_ACTIVE: 'SET_PREV_ACTIVE',
-    SET_SPLIT: 'SET_SPLIT',
+  ADD_BOX: 'ADD_BOX',
+  REMOVE_BOX: 'REMOVE_BOX',
+  SET_ACTIVE: 'SET_ACTIVE',
+  SET_NEXT_ACTIVE: 'SET_NEXT_ACTIVE',
+  SET_PREV_ACTIVE: 'SET_PREV_ACTIVE',
+  SET_SPLIT: 'SET_SPLIT',
+  SET_BOX_FLOAT: 'SET_BOX_FLOAT',
+  SET_BOX_STACK: 'SET_BOX_STACK',
+  MOVE_BOX: 'MOVE_BOX',
 }
 
 export const addBox = (appType) => ({
-    type: types.ADD_BOX,
-    appType
+  type: types.ADD_BOX,
+  appType,
 })
 
 export const removeBox = (id) => ({
-    type: types.REMOVE_BOX,
-    id
+  type: types.REMOVE_BOX,
+  id,
 })
 
 export const setActive = (active) => ({
-    type: types.SET_ACTIVE,
-    active
+  type: types.SET_ACTIVE,
+  active,
 })
 
 export const setNextActive = () => ({
-    type: types.SET_NEXT_ACTIVE
+  type: types.SET_NEXT_ACTIVE,
 })
 
 export const setPrevActive = () => ({
-    type: types.SET_PREV_ACTIVE
+  type: types.SET_PREV_ACTIVE,
 })
 
 export const setSplit = (split) => ({
-    type: types.SET_SPLIT,
-    split
+  type: types.SET_SPLIT,
+  split,
+})
+
+export const setBoxFloat = (id) => ({
+  type: types.SET_BOX_FLOAT,
+  id,
+})
+
+export const setBoxStack = (id) => ({
+  type: types.SET_BOX_STACK,
+  id,
+})
+
+export const setBoxMove = (move) => ({
+  type: types.MOVE_BOX,
+  move,
 })
 
 const setPositions = (boxes, split) => {
-    if (boxes.length > 0) {
-        boxes[0].top = 0
-        boxes[0].left = 0
-        boxes[0].width = boxes.length > 1 ? split : containerWidth
-        boxes[0].height = containerHeight
-    }
+  const stackBoxes = boxes.filter((box) => !box.float)
 
-    const sideBoxesSize = boxes.length - 1
+  if (stackBoxes.length > 0) {
+    const left = split
+    const height = Math.floor(containerHeight / (stackBoxes.length - 1))
 
-    if (sideBoxesSize > 0) {
-        const left = split
-        const height = Math.floor(containerHeight / sideBoxesSize)
+    let stackIndex = 0
 
-        for (let i = 1; i <= sideBoxesSize; i++) {
-            boxes[i].left = left
-            boxes[i].top = height * (i - 1)
-            boxes[i].width = containerWidth - split
-            boxes[i].height = height
+    for (let i = 0; i < boxes.length; i++) {
+      if (!boxes[i].float) {
+        if (stackIndex === 0) {
+          boxes[i].top = 0
+          boxes[i].left = 0
+          boxes[i].width = stackBoxes.length > 1 ? split : containerWidth
+          boxes[i].height = containerHeight
+        } else {
+          boxes[i].left = left
+          boxes[i].top = height * (stackIndex - 1)
+          boxes[i].width = containerWidth - split
+          boxes[i].height = height
         }
-    }
 
-    return [...boxes]
+        stackIndex++
+      }
+    }
+  }
+
+  return [...boxes]
 }
 
 export const reducer = (state = initialState, action) => {
-    let { boxes, active, split, template } = state
-    let index
+  let { boxes, active, split, template } = state
+  let index
 
-    switch (action.type) {
-        case types.SET_SPLIT:
-            split = action.split
-            boxes = setPositions(boxes, split)
+  switch (action.type) {
+    case types.SET_SPLIT:
+      split = action.split
+      boxes = setPositions(boxes, split)
 
-            return {
-                ...state,
-               boxes,
-               split,
-               template
-            }
+      return {
+        ...state,
+        boxes,
+        split,
+        template,
+      }
 
-        case types.SET_ACTIVE:
-            return {
-                ...state,
-                active: action.active
-            }
+    case types.SET_ACTIVE:
+      return {
+        ...state,
+        active: action.active,
+      }
 
-        case types.ADD_BOX:
-            boxes = setPositions([...boxes, { 
-                id: 'box' + uuid().split('-')[0],
-                type: action.appType
-            }], split)
+    case types.MOVE_BOX:
+      index = findIndex(boxes, (box) => box.id === active)
 
-            return {
-                ...state,
-                boxes
-            }
+      if (boxes[index].float) {
+        if (action.move === 'left') {
+          boxes[index].left -= 1
+        }
+        if (action.move === 'right') {
+          boxes[index].left += 1
+        }
+        if (action.move === 'up') {
+          boxes[index].top -= 1
+        }
+        if (action.move === 'down') {
+          boxes[index].top += 1
+        }
+      }
 
-        case types.REMOVE_BOX:
-            boxes = setPositions(boxes.filter(box => box.id !== action.id), split)
+      return {
+        ...state,
+        boxes: setPositions(boxes),
+      }
 
-            return {
-                ...state,
-                boxes
-            }
+    case types.ADD_BOX:
+      boxes = setPositions(
+        [
+          ...boxes,
+          {
+            id: 'box' + uuid().split('-')[0],
+            type: action.appType,
+          },
+        ],
+        split
+      )
 
-        case types.SET_NEXT_ACTIVE:
-            index = findIndex(boxes, { id: active }) + 1
+      return {
+        ...state,
+        boxes,
+      }
 
-            return {
-                ...state,
-                active: boxes[index].id
-            }
-        case types.SET_PREV_ACTIVE: 
-            index = findIndex(boxes, { id: active }) - 1
+    case types.REMOVE_BOX:
+      boxes = setPositions(
+        boxes.filter((box) => box.id !== action.id),
+        split
+      )
 
-            return {
-                ...state,
-                active: boxes[index].id
-            }
+      return {
+        ...state,
+        boxes,
+      }
 
-        default:
-            return state
-    }
+    case types.SET_BOX_FLOAT:
+      index = boxes.findIndex((box) => box.id === action.id)
+      boxes[index].float = true
+      boxes[index].top = Math.floor(containerHeight / 4)
+      boxes[index].left = Math.floor(containerWidth / 4)
+      boxes[index].width = Math.floor(containerWidth / 2)
+      boxes[index].height = Math.floor(containerHeight / 2)
+
+      return {
+        ...state,
+        boxes: setPositions(boxes, split),
+      }
+
+    case types.SET_BOX_STACK:
+      index = boxes.findIndex((box) => box.id === action.id)
+      boxes[index].float = false
+
+      return {
+        ...state,
+        boxes: setPositions(boxes, split),
+      }
+
+    case types.SET_NEXT_ACTIVE:
+      index = findIndex(boxes, { id: active }) + 1
+
+      return {
+        ...state,
+        active: boxes[index].id,
+      }
+    case types.SET_PREV_ACTIVE:
+      index = findIndex(boxes, { id: active }) - 1
+
+      return {
+        ...state,
+        active: boxes[index].id,
+      }
+
+    default:
+      return state
+  }
 }
