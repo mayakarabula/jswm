@@ -42,8 +42,6 @@ const generateAreaTemplating = (boxes) => {
       }
     })
 
-  console.log(template)
-
   return template.map((row) => '"' + row.join(' ') + '"').join('\n')
 }
 

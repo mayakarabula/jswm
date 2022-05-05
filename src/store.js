@@ -8,7 +8,6 @@ const initialState = {
   boxes: [],
   active: null,
   split: split,
-  template: '',
 }
 
 const types = {
@@ -21,6 +20,7 @@ const types = {
   SET_BOX_FLOAT: 'SET_BOX_FLOAT',
   SET_BOX_STACK: 'SET_BOX_STACK',
   MOVE_BOX: 'MOVE_BOX',
+  RESIZE_BOX: 'RESIZE_BOX',
 }
 
 export const addBox = (appType) => ({
@@ -66,6 +66,11 @@ export const setBoxMove = (move) => ({
   move,
 })
 
+export const resizeBox = (resize) => ({
+  type: types.RESIZE_BOX,
+  resize,
+})
+
 const setPositions = (boxes, split) => {
   const stackBoxes = boxes.filter((box) => !box.float)
 
@@ -98,7 +103,7 @@ const setPositions = (boxes, split) => {
 }
 
 export const reducer = (state = initialState, action) => {
-  let { boxes, active, split, template } = state
+  let { boxes, active, split } = state
   let index
 
   switch (action.type) {
@@ -110,13 +115,43 @@ export const reducer = (state = initialState, action) => {
         ...state,
         boxes,
         split,
-        template,
       }
 
     case types.SET_ACTIVE:
       return {
         ...state,
         active: action.active,
+      }
+
+    case types.RESIZE_BOX:
+      index = findIndex(boxes, (box) => box.id === active)
+
+      if (boxes[index].float) {
+        if (action.resize === 'left') {
+          boxes[index].width -= 1
+        }
+        if (action.resize === 'right') {
+          boxes[index].width += 1
+        }
+        if (action.resize === 'up') {
+          boxes[index].height -= 1
+        }
+        if (action.resize === 'down') {
+          boxes[index].height += 1
+        }
+      } else {
+        if (action.resize === 'left') {
+          split -= 1
+        }
+        if (action.resize === 'right') {
+          split += 1
+        }
+      }
+
+      return {
+        ...state,
+        boxes: setPositions(boxes, split),
+        split,
       }
 
     case types.MOVE_BOX:
@@ -143,20 +178,26 @@ export const reducer = (state = initialState, action) => {
       }
 
     case types.ADD_BOX:
+      const newId = 'box' + uuid().split('-')[0]
       boxes = setPositions(
         [
           ...boxes,
           {
-            id: 'box' + uuid().split('-')[0],
+            id: newId,
             type: action.appType,
           },
         ],
         split
       )
 
+      if (!active) {
+        active = newId
+      }
+
       return {
         ...state,
         boxes,
+        active,
       }
 
     case types.REMOVE_BOX:

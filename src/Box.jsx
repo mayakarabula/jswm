@@ -75,7 +75,7 @@ const Component = (props) => {
     >
       <WindowBar>
         <WindowBarSide>
-          <span>Window | {id}</span>
+          <span>{type}</span>
         </WindowBarSide>
         <WindowBarSide>
           <BoxIcon
@@ -86,9 +86,7 @@ const Component = (props) => {
           <BoxIcon onClick={() => dispatch(removeBox(id))}></BoxIcon>
         </WindowBarSide>
       </WindowBar>
-      <ContentWrapper onMouseOver={() => dispatch(setActive(id))}>
-        {getAppContent(type)}
-      </ContentWrapper>
+      <ContentWrapper>{getAppContent(type)}</ContentWrapper>
     </Box>
   )
 }

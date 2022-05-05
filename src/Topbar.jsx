@@ -5,6 +5,7 @@ import { appTypes } from './Applications'
 import { config } from './config'
 import {
   addBox,
+  resizeBox,
   setActive,
   setBoxMove,
   setNextActive,
@@ -91,11 +92,17 @@ const Component = () => {
         )}
         {selectedMode === 'resize' && (
           <>
-            <TopBarIcon onClick={() => dispatch(setSplit(split - 1))}>
+            <TopBarIcon onClick={() => dispatch(resizeBox('left'))}>
               Left
             </TopBarIcon>
-            <TopBarIcon onClick={() => dispatch(setSplit(split + 1))}>
+            <TopBarIcon onClick={() => dispatch(resizeBox('right'))}>
               Right
+            </TopBarIcon>
+            <TopBarIcon onClick={() => dispatch(resizeBox('up'))}>
+              Up
+            </TopBarIcon>
+            <TopBarIcon onClick={() => dispatch(resizeBox('down'))}>
+              Down
             </TopBarIcon>
           </>
         )}
