@@ -6,6 +6,9 @@
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.1.1",
     "@testing-library/user-event": "^13.5.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "http": "^0.0.1-security",
     "i": "^0.3.7",
     "lodash-es": "^4.17.21",
     "npm": "^8.8.0",
@@ -14,6 +17,8 @@
     "react-redux": "^8.0.1",
     "react-scripts": "5.0.1",
     "redux": "^4.2.0",
+    "socket.io": "^4.5.0",
+    "socket.io-client": "^4.5.0",
     "styled": "^1.0.0",
     "styled-components": "^5.3.5",
     "uuid": "^8.3.2",
@@ -25,6 +30,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "prettier --write ./src",
+    "daemon": "node ./src/Daemon.js",
     "term": "ttyd -p 8080 -t 'theme={\"background\": \"#282a36\"}' zsh"
   },
   "eslintConfig": {

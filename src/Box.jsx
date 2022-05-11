@@ -11,7 +11,7 @@ const Box = styled.div`
   grid-area: ${(props) => props.area};
   background: ${(props) => (props.active ? 'lightblue' : 'pink')};
   border: 2px solid ${(props) => (props.active ? 'lightblue' : 'pink')};
-  display: flex;
+  display: ${props => props.activeLayer ? 'flex' : 'none'};
   flex-direction: column;
 
   ${(props) =>
@@ -57,10 +57,12 @@ const WindowBarSide = styled.div`
 `
 
 const selectActive = (state) => state.active
+const selectLayer = (state) => state.layer
 
 const Component = (props) => {
   const { id, type, float } = props.box
   const active = useSelector(selectActive)
+  const layer = useSelector(selectLayer)
   const dispatch = useDispatch()
 
   return (
@@ -68,6 +70,7 @@ const Component = (props) => {
       area={id}
       box={props.box}
       active={active === id}
+      activeLayer={layer === props.box.layer}
       tabIndex="0"
       onFocus={() => dispatch(setActive(id))}
       onClick={() => dispatch(setActive(id))}

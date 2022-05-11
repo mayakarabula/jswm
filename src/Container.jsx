@@ -29,11 +29,11 @@ const getNewTemplate = () => {
   return map
 }
 
-const generateAreaTemplating = (boxes) => {
+const generateAreaTemplating = (boxes, layer) => {
   const template = getNewTemplate()
 
   boxes
-    .filter((box) => !box.float)
+    .filter((box) => !box.float && box.layer === layer)
     .forEach((box) => {
       for (let y = box.top; y < box.top + box.height; y++) {
         for (let x = box.left; x < box.left + box.width; x++) {
@@ -45,13 +45,16 @@ const generateAreaTemplating = (boxes) => {
   return template.map((row) => '"' + row.join(' ') + '"').join('\n')
 }
 
+const selectLayer = (state) => state.layer
+
 const Component = (props) => {
   const boxes = useSelector(props.boxesSelector)
-  const [template, setTemplate] = useState(generateAreaTemplating(boxes))
+  const layer = useSelector(selectLayer)
+  const [template, setTemplate] = useState(generateAreaTemplating(boxes, layer))
 
   useEffect(() => {
-    setTemplate(generateAreaTemplating(boxes))
-  }, [boxes])
+    setTemplate(generateAreaTemplating(boxes, layer))
+  }, [boxes, layer])
 
   return (
     <Container template={template}>

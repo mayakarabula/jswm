@@ -11,8 +11,10 @@ import {
   setNextActive,
   setPrevActive,
   setSplit,
+  setLayer
 } from './store'
 import { colors } from './style'
+import Clock from './Clock'
 
 const { topBarHeight, margin } = config
 
@@ -46,11 +48,14 @@ const TopBarSide = styled.div`
 
 const selectBoxes = (state) => state.boxes
 const selectSplit = (state) => state.split
+const selectLayer = (state) => state.layer
 
 const Component = () => {
   const dispatch = useDispatch()
   const boxes = useSelector(selectBoxes)
   const split = useSelector(selectSplit)
+  const layer = useSelector(selectLayer)
+
   const [selectedMode, setMode] = useState('normal')
 
   return (
@@ -122,9 +127,24 @@ const Component = () => {
             </TopBarIcon>
           </>
         )}
+        <>
+          <TopBarIcon onClick={() => dispatch(setLayer(0))}>
+            {layer === 0 ? '[0]' : '0'}
+          </TopBarIcon>
+          <TopBarIcon onClick={() => dispatch(setLayer(1))}>
+            {layer === 1 ? '[1]' : '1'}
+          </TopBarIcon>
+          <TopBarIcon onClick={() => dispatch(setLayer(2))}>
+            {layer === 2 ? '[2]' : '2'}
+          </TopBarIcon>
+          <TopBarIcon onClick={() => dispatch(setLayer(3))}>
+            {layer === 3 ? '[3]' : '3'}
+          </TopBarIcon>
+        </>
       </TopBarSide>
       <TopBarSide>
-        <span>Heyyy Mayaaa</span>
+        <TopBarIcon>Heyyy Mayaaa </TopBarIcon>
+        <Clock/>
       </TopBarSide>
     </Topbar>
   )

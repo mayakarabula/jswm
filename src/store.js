@@ -8,6 +8,7 @@ const initialState = {
   boxes: [],
   active: null,
   split: split,
+  layer: 0
 }
 
 const types = {
@@ -21,6 +22,7 @@ const types = {
   SET_BOX_STACK: 'SET_BOX_STACK',
   MOVE_BOX: 'MOVE_BOX',
   RESIZE_BOX: 'RESIZE_BOX',
+  SET_LAYER: 'SET_LAYER'
 }
 
 export const addBox = (appType) => ({
@@ -71,8 +73,13 @@ export const resizeBox = (resize) => ({
   resize,
 })
 
-const setPositions = (boxes, split) => {
-  const stackBoxes = boxes.filter((box) => !box.float)
+export const setLayer = (layer) => ({
+  type: types.SET_LAYER,
+  layer
+})
+
+const setPositions = (boxes, split, layer) => {
+  const stackBoxes = boxes.filter((box) => !box.float && box.layer === layer)
 
   if (stackBoxes.length > 0) {
     const left = split
@@ -81,7 +88,7 @@ const setPositions = (boxes, split) => {
     let stackIndex = 0
 
     for (let i = 0; i < boxes.length; i++) {
-      if (!boxes[i].float) {
+      if (!boxes[i].float && boxes[i].layer === layer) {
         if (stackIndex === 0) {
           boxes[i].top = 0
           boxes[i].left = 0
@@ -103,13 +110,13 @@ const setPositions = (boxes, split) => {
 }
 
 export const reducer = (state = initialState, action) => {
-  let { boxes, active, split } = state
+  let { boxes, active, split, layer } = state
   let index
 
   switch (action.type) {
     case types.SET_SPLIT:
       split = action.split
-      boxes = setPositions(boxes, split)
+      boxes = setPositions(boxes, split, layer)
 
       return {
         ...state,
@@ -121,6 +128,16 @@ export const reducer = (state = initialState, action) => {
       return {
         ...state,
         active: action.active,
+      }
+
+    case types.SET_LAYER:
+      layer = action.layer
+      boxes = setPositions(boxes, split, layer)
+
+      return {
+        ...state,
+        layer,
+        boxes
       }
 
     case types.RESIZE_BOX:
@@ -150,7 +167,7 @@ export const reducer = (state = initialState, action) => {
 
       return {
         ...state,
-        boxes: setPositions(boxes, split),
+        boxes: setPositions(boxes, split, layer),
         split,
       }
 
@@ -174,7 +191,7 @@ export const reducer = (state = initialState, action) => {
 
       return {
         ...state,
-        boxes: setPositions(boxes),
+        boxes: setPositions(boxes, split, layer),
       }
 
     case types.ADD_BOX:
@@ -185,9 +202,11 @@ export const reducer = (state = initialState, action) => {
           {
             id: newId,
             type: action.appType,
+            layer: state.layer
           },
         ],
-        split
+        split,
+        layer
       )
 
       if (!active) {
@@ -203,7 +222,8 @@ export const reducer = (state = initialState, action) => {
     case types.REMOVE_BOX:
       boxes = setPositions(
         boxes.filter((box) => box.id !== action.id),
-        split
+        split,
+        layer
       )
 
       return {
@@ -221,7 +241,7 @@ export const reducer = (state = initialState, action) => {
 
       return {
         ...state,
-        boxes: setPositions(boxes, split),
+        boxes: setPositions(boxes, split, layer),
       }
 
     case types.SET_BOX_STACK:
@@ -230,7 +250,7 @@ export const reducer = (state = initialState, action) => {
 
       return {
         ...state,
-        boxes: setPositions(boxes, split),
+        boxes: setPositions(boxes, split, layer),
       }
 
     case types.SET_NEXT_ACTIVE:
