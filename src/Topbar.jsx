@@ -58,6 +58,14 @@ const Component = () => {
 
   const [selectedMode, setMode] = useState('normal')
 
+  const handleOperations = (value) => {
+    let operation
+
+    if (selectedMode === 'focus') {
+
+    }
+  }
+
   return (
     <Topbar>
       <TopBarSide>
@@ -68,6 +76,9 @@ const Component = () => {
         <TopBarIcon onClick={() => dispatch(addBox(appTypes.vscode))}>
           vscode
         </TopBarIcon>
+         <TopBarIcon onClick={() => dispatch(addBox(appTypes.image))}>
+          image 
+         </TopBarIcon>
         <TopBarIcon>|</TopBarIcon>
         {['normal', 'focus', 'resize', 'move'].map((mode) => (
           <TopBarIcon onClick={() => setMode(mode)}>
@@ -93,6 +104,9 @@ const Component = () => {
             <TopBarIcon onClick={() => dispatch(setPrevActive())}>
               Up
             </TopBarIcon>
+             <TopBarIcon>
+              |
+            </TopBarIcon>
           </>
         )}
         {selectedMode === 'resize' && (
@@ -109,6 +123,9 @@ const Component = () => {
             <TopBarIcon onClick={() => dispatch(resizeBox('down'))}>
               Down
             </TopBarIcon>
+            <TopBarIcon>
+              |
+            </TopBarIcon>
           </>
         )}
         {selectedMode === 'move' && (
@@ -124,6 +141,9 @@ const Component = () => {
             </TopBarIcon>
             <TopBarIcon onClick={() => dispatch(setBoxMove('down'))}>
               Down
+            </TopBarIcon>
+             <TopBarIcon>
+              |
             </TopBarIcon>
           </>
         )}
