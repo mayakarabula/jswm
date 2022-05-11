@@ -22,3 +22,4 @@ I have another idea. It's a bit cursed but it's quite pleasant to work with so f
 ## Screenshots
 
 ![screenshot](shot.png)
+![screenshot 2](shot2.png)
