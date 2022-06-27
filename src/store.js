@@ -1,4 +1,4 @@
-import { findIndex } from 'lodash-es'
+import { findIndex, find } from 'lodash-es'
 import { v4 as uuid } from 'uuid'
 import { config } from './config'
 
@@ -8,7 +8,8 @@ const initialState = {
   boxes: [],
   active: null,
   split: split,
-  layer: 0
+  layer: 0,
+  order: []
 }
 
 const types = {
@@ -78,30 +79,26 @@ export const setLayer = (layer) => ({
   layer
 })
 
-const setPositions = (boxes, split, layer) => {
-  const stackBoxes = boxes.filter((box) => !box.float && box.layer === layer)
+const setPositions = ({ boxes, split, layer, order }) => {
+  const stackBoxes = order.map(id => find(boxes, { id })).filter((box) => box.layer === layer)
 
   if (stackBoxes.length > 0) {
     const left = split
     const height = Math.floor(containerHeight / (stackBoxes.length - 1))
 
-    let stackIndex = 0
-
-    for (let i = 0; i < boxes.length; i++) {
-      if (!boxes[i].float && boxes[i].layer === layer) {
-        if (stackIndex === 0) {
-          boxes[i].top = 0
-          boxes[i].left = 0
-          boxes[i].width = stackBoxes.length > 1 ? split : containerWidth
-          boxes[i].height = containerHeight
+    for (let i = 0; i < stackBoxes.length; i++) {
+      if (stackBoxes[i].layer === layer) {
+        if (i === 0) {
+          stackBoxes[i].top = 0
+          stackBoxes[i].left = 0
+          stackBoxes[i].width = stackBoxes.length > 1 ? split : containerWidth
+          stackBoxes[i].height = containerHeight
         } else {
-          boxes[i].left = left
-          boxes[i].top = height * (stackIndex - 1)
-          boxes[i].width = containerWidth - split
-          boxes[i].height = height
+          stackBoxes[i].left = left
+          stackBoxes[i].top = height * (i - 1)
+          stackBoxes[i].width = containerWidth - split
+          stackBoxes[i].height = height
         }
-
-        stackIndex++
       }
     }
   }
@@ -109,14 +106,22 @@ const setPositions = (boxes, split, layer) => {
   return [...boxes]
 }
 
+const swapArrayElements = (array, x, y) => {
+  const temp = array[y];
+  array[y] = array[x];
+  array[x] = temp;
+
+  return [...array]
+}
+
 export const reducer = (state = initialState, action) => {
-  let { boxes, active, split, layer } = state
+  let { boxes, active, split, layer, order } = state
   let index
 
   switch (action.type) {
     case types.SET_SPLIT:
       split = action.split
-      boxes = setPositions(boxes, split, layer)
+      boxes = setPositions({ boxes, split, layer, order })
 
       return {
         ...state,
@@ -132,7 +137,7 @@ export const reducer = (state = initialState, action) => {
 
     case types.SET_LAYER:
       layer = action.layer
-      boxes = setPositions(boxes, split, layer)
+      boxes = setPositions({ boxes, split, layer, order })
 
       return {
         ...state,
@@ -167,7 +172,7 @@ export const reducer = (state = initialState, action) => {
 
       return {
         ...state,
-        boxes: setPositions(boxes, split, layer),
+        boxes: setPositions({ boxes, split, layer, order }),
         split,
       }
 
@@ -187,17 +192,35 @@ export const reducer = (state = initialState, action) => {
         if (action.move === 'down') {
           boxes[index].top += 1
         }
+      } else {
+        const orderIndex = findIndex(order, id => id === active)
+
+        if (action.move === 'left') {
+          order = swapArrayElements(order, 0, orderIndex)
+
+        } else if (action.move === 'right' && orderIndex === 0) {
+          order = swapArrayElements(order, 0, 1)
+
+        } else if (action.move === 'up' && orderIndex > 1) {
+          order = swapArrayElements(order, orderIndex, orderIndex - 1)
+
+        } else if (action.move === 'down' && orderIndex > 0 && (orderIndex !== order.length - 1)) {
+          order = swapArrayElements(order, orderIndex, orderIndex + 1)
+        }
       }
 
       return {
         ...state,
-        boxes: setPositions(boxes, split, layer),
+        order,
+        boxes: setPositions({ boxes, split, layer, order }),
       }
 
     case types.ADD_BOX:
       const newId = 'box' + uuid().split('-')[0]
-      boxes = setPositions(
-        [
+      order = [...order, newId]
+
+      boxes = setPositions({
+        boxes: [
           ...boxes,
           {
             id: newId,
@@ -206,8 +229,9 @@ export const reducer = (state = initialState, action) => {
           },
         ],
         split,
-        layer
-      )
+        layer,
+        order
+      })
 
       if (!active) {
         active = newId
@@ -215,16 +239,18 @@ export const reducer = (state = initialState, action) => {
 
       return {
         ...state,
+        order,
         boxes,
         active,
       }
 
     case types.REMOVE_BOX:
-      boxes = setPositions(
-        boxes.filter((box) => box.id !== action.id),
-        split,
-        layer
-      )
+      boxes = setPositions({
+        boxes: boxes.filter((box) => box.id !== action.id),
+          split,
+        layer,
+        order
+    })
 
       return {
         ...state,
@@ -238,19 +264,23 @@ export const reducer = (state = initialState, action) => {
       boxes[index].left = Math.floor(containerWidth / 4)
       boxes[index].width = Math.floor(containerWidth / 2)
       boxes[index].height = Math.floor(containerHeight / 2)
+      order = order.filter(id => id !== boxes[index].id)
 
       return {
         ...state,
-        boxes: setPositions(boxes, split, layer),
+        order,
+        boxes: setPositions({ boxes, split, layer, order }),
       }
 
     case types.SET_BOX_STACK:
       index = boxes.findIndex((box) => box.id === action.id)
       boxes[index].float = false
+      order = [...order, boxes[index].id]
 
       return {
         ...state,
-        boxes: setPositions(boxes, split, layer),
+        order,
+        boxes: setPositions({ boxes, split, layer, order }),
       }
 
     case types.SET_NEXT_ACTIVE:
