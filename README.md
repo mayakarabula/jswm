@@ -2,6 +2,10 @@
 
 [My post on this project](https://jakubkarabula.github.io/mysite/jswm.html)
 
+
+## how to add cert and key for https
+https://dev.to/josuebustos/https-localhost-for-node-js-1p1k
+
 ## Intro
 
 In my day to day job I am working a web developer. In most companies in Berlin that means working on a Mac. Which is not too bad, a lot of the terminal tools are available for macOS as well which is great. What is less great is that it's not so easy to replace window manager on the newer versions of macOS, but I don't want to say good bye to keyboard driven tiling window managers like i3 and bspwm. There are two main options that I have tried:

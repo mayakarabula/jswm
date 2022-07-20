@@ -1,4 +1,5 @@
-import { findIndex, find } from 'lodash-es'
+import e from 'cors'
+import { findIndex, find, last } from 'lodash-es'
 import { v4 as uuid } from 'uuid'
 import { config } from './config'
 
@@ -80,11 +81,22 @@ export const setLayer = (layer) => ({
 })
 
 const setPositions = ({ boxes, split, layer, order }) => {
+
+  console.log({ layer, order, boxes })
+console.log(order.map(id => find(boxes, { id })))
+
   const stackBoxes = order.map(id => find(boxes, { id })).filter((box) => box.layer === layer)
 
   if (stackBoxes.length > 0) {
     const left = split
-    const height = Math.floor(containerHeight / (stackBoxes.length - 1))
+    const stackBoxPredefinedHeight = stackBoxes.reduce((sum, box) => {
+      return sum += box.modHeight || 0
+    }, 0)
+    const height = Math.floor((containerHeight) / (stackBoxes.length - 1))
+
+    console.log({ stackBoxPredefinedHeight, height, stackBoxes })
+
+    let positionY = 0
 
     for (let i = 0; i < stackBoxes.length; i++) {
       if (stackBoxes[i].layer === layer) {
@@ -95,9 +107,11 @@ const setPositions = ({ boxes, split, layer, order }) => {
           stackBoxes[i].height = containerHeight
         } else {
           stackBoxes[i].left = left
-          stackBoxes[i].top = height * (i - 1)
+          stackBoxes[i].top = positionY
           stackBoxes[i].width = containerWidth - split
-          stackBoxes[i].height = height
+          stackBoxes[i].height = i < stackBoxes.length -1 ? height + (stackBoxes[i].modHeight || 0) : containerHeight - positionY
+
+          positionY += height + (stackBoxes[i].modHeight || 0)
         }
       }
     }
@@ -147,6 +161,8 @@ export const reducer = (state = initialState, action) => {
 
     case types.RESIZE_BOX:
       index = findIndex(boxes, (box) => box.id === active)
+      const stackBoxes = order.map(id => find(boxes, { id })).filter((box) => box.layer === layer)
+      const avgBoxHeight = Math.floor((containerHeight) / (stackBoxes.length - 1))
 
       if (boxes[index].float) {
         if (action.resize === 'left') {
@@ -167,6 +183,26 @@ export const reducer = (state = initialState, action) => {
         }
         if (action.resize === 'right') {
           split += 1
+        }
+        if (action.resize === 'up' && stackBoxes.length > 2) {
+          console.log({ containerHeight, avgBoxHeight, m: boxes[index].modHeight })
+
+          if (last(stackBoxes).id === boxes[index].id) {
+            stackBoxes[index - 1].modHeight += 1
+          } else {
+            if (boxes[index].modHeight * -1 < avgBoxHeight - 1) {
+              boxes[index].modHeight -= 1
+            }
+          }
+        }
+        if (action.resize === 'down' && stackBoxes.length > 2) {  
+          if (last(stackBoxes).id === boxes[index].id) {
+            if (stackBoxes[index - 1].modHeight * -1 < avgBoxHeight - 1) {
+              stackBoxes[index - 1].modHeight -= 1
+            }
+          } else {
+            boxes[index].modHeight += 1
+          }
         }
       }
 
@@ -225,7 +261,8 @@ export const reducer = (state = initialState, action) => {
           {
             id: newId,
             type: action.appType,
-            layer: state.layer
+            layer: state.layer,
+            modHeight: 0
           },
         ],
         split,
@@ -245,16 +282,18 @@ export const reducer = (state = initialState, action) => {
       }
 
     case types.REMOVE_BOX:
+      order = order.filter((id) => id !== action.id)
       boxes = setPositions({
-        boxes: boxes.filter((box) => box.id !== action.id),
+          boxes: boxes.filter((box) => box.id !== action.id),
           split,
-        layer,
-        order
-    })
+          layer,
+          order
+      })
 
       return {
         ...state,
         boxes,
+        order
       }
 
     case types.SET_BOX_FLOAT:

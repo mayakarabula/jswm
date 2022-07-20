@@ -5,7 +5,7 @@ import useSocketClient from './Socket'
 const selectBoxes = (state) => state.boxes
 
 function App() { 
-  useSocketClient()
+  // useSocketClient()
 
   return (
     <div>
