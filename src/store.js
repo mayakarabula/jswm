@@ -166,7 +166,6 @@ export const reducer = (state = initialState, action) => {
       const avgHeight = () => Math.floor((containerHeight - modHeights) / (stackBoxes.length - boxesWithModHeight.length -1))
 
       const freeUpSpace = () => {
-        console.log({ stackBoxes, boxesWithModHeight })
         if (stackBoxes.length - boxesWithModHeight.length === 2) {
           if (last(stackBoxes).id === boxes[index].id) {
             delete stackBoxes[1].modHeight

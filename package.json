@@ -34,7 +34,8 @@
     "lint": "prettier --write ./src",
     "daemon": "node ./src/Daemon.js",
     "term": "ttyd -p 8080 -t 'theme={\"background\": \"#282a36\"}' zsh",
-    "server": "node server.js"
+    "server": "node server.js",
+    "cli": "node ./src/cli.js"
   },
   "eslintConfig": {
     "extends": [

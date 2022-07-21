@@ -14,14 +14,16 @@ app.get('/', function (req, res) {
 const server = require('http').createServer(app)
 const io = require('socket.io')(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "http://localhost:1234",
     methods: ["GET", "POST"]
   }
 })
 
 io.on('connection', client => {
   client.on('event', data => {
-    console.log('event', JSON.stringify(data))
+    const [space, command] = data
+
+    io.emit(space, command)
   });
   
   client.on('disconnect', () => { 
