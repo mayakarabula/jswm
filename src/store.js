@@ -89,12 +89,11 @@ console.log(order.map(id => find(boxes, { id })))
 
   if (stackBoxes.length > 0) {
     const left = split
-    const stackBoxPredefinedHeight = stackBoxes.reduce((sum, box) => {
-      return sum += box.modHeight || 0
-    }, 0)
-    const height = Math.floor((containerHeight) / (stackBoxes.length - 1))
+    const boxesWithModHeight = stackBoxes.filter(box => box.modHeight)
+    const modHeights = boxesWithModHeight.reduce((prev, curr) => prev + curr.modHeight, 0)
+    const avgHeight = Math.floor((containerHeight - modHeights) / (stackBoxes.length - boxesWithModHeight.length - 1))
 
-    console.log({ stackBoxPredefinedHeight, height, stackBoxes })
+    console.log({ modHeights, boxesWithModHeight, avgHeight })
 
     let positionY = 0
 
@@ -109,9 +108,9 @@ console.log(order.map(id => find(boxes, { id })))
           stackBoxes[i].left = left
           stackBoxes[i].top = positionY
           stackBoxes[i].width = containerWidth - split
-          stackBoxes[i].height = i < stackBoxes.length -1 ? height + (stackBoxes[i].modHeight || 0) : containerHeight - positionY
+          stackBoxes[i].height = stackBoxes[i].modHeight || avgHeight
 
-          positionY += height + (stackBoxes[i].modHeight || 0)
+          positionY += stackBoxes[i].height
         }
       }
     }
@@ -162,7 +161,20 @@ export const reducer = (state = initialState, action) => {
     case types.RESIZE_BOX:
       index = findIndex(boxes, (box) => box.id === active)
       const stackBoxes = order.map(id => find(boxes, { id })).filter((box) => box.layer === layer)
-      const avgBoxHeight = Math.floor((containerHeight) / (stackBoxes.length - 1))
+      const boxesWithModHeight = stackBoxes.filter(box => box.modHeight)
+      const modHeights = boxesWithModHeight.reduce((prev, curr) => prev + curr.modHeight, 0)
+      const avgHeight = () => Math.floor((containerHeight - modHeights) / (stackBoxes.length - boxesWithModHeight.length -1))
+
+      const freeUpSpace = () => {
+        console.log({ stackBoxes, boxesWithModHeight })
+        if (stackBoxes.length - boxesWithModHeight.length === 2) {
+          if (last(stackBoxes).id === boxes[index].id) {
+            delete stackBoxes[1].modHeight
+          } else {
+            delete last(stackBoxes).modHeight
+          }
+        }
+      }
 
       if (boxes[index].float) {
         if (action.resize === 'left') {
@@ -185,23 +197,21 @@ export const reducer = (state = initialState, action) => {
           split += 1
         }
         if (action.resize === 'up' && stackBoxes.length > 2) {
-          console.log({ containerHeight, avgBoxHeight, m: boxes[index].modHeight })
-
-          if (last(stackBoxes).id === boxes[index].id) {
-            stackBoxes[index - 1].modHeight += 1
-          } else {
-            if (boxes[index].modHeight * -1 < avgBoxHeight - 1) {
-              boxes[index].modHeight -= 1
-            }
+          if (boxes[index].modHeight > 3) {
+            boxes[index].modHeight -= 1
+          } else if (!boxes[index].modHeight) {
+            freeUpSpace()
+            boxes[index].modHeight = avgHeight() - 1
           }
         }
         if (action.resize === 'down' && stackBoxes.length > 2) {  
-          if (last(stackBoxes).id === boxes[index].id) {
-            if (stackBoxes[index - 1].modHeight * -1 < avgBoxHeight - 1) {
-              stackBoxes[index - 1].modHeight -= 1
+          if (boxes[index].modHeight) {
+            if (avgHeight() > (stackBoxes.length - boxesWithModHeight.length - 1) * 3) {
+              boxes[index].modHeight += 1
             }
           } else {
-            boxes[index].modHeight += 1
+            freeUpSpace()
+            boxes[index].modHeight = avgHeight() + 1
           }
         }
       }
@@ -255,6 +265,11 @@ export const reducer = (state = initialState, action) => {
       const newId = 'box' + uuid().split('-')[0]
       order = [...order, newId]
 
+      boxes = boxes.map(box => {
+        delete box.modHeight
+        return box
+      })
+
       boxes = setPositions({
         boxes: [
           ...boxes,
@@ -262,7 +277,6 @@ export const reducer = (state = initialState, action) => {
             id: newId,
             type: action.appType,
             layer: state.layer,
-            modHeight: 0
           },
         ],
         split,
