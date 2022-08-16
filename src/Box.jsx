@@ -1,18 +1,17 @@
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { removeBox, setActive, setBoxFloat, setBoxStack } from './store'
-import { colors } from './style'
 import { config } from './config'
 import { getAppContent } from './Applications'
 
-const { margin, containerHeight, containerWidth } = config
+const { containerHeight, containerWidth } = config
 
 const Box = styled.div`
   grid-area: ${(props) => props.area};
-  background: ${(props) => (props.active ? 'lightblue' : 'pink')};
-  border: 2px solid ${(props) => (props.active ? 'lightblue' : 'pink')};
   display: ${props => props.activeLayer ? 'flex' : 'none'};
   flex-direction: column;
+  border: 1px solid black;
+  background-color: white;
 
   ${(props) =>
     props.box.float
@@ -30,30 +29,6 @@ const Box = styled.div`
 
 const ContentWrapper = styled.div`
   flex: 1;
-`
-
-const WindowBar = styled.div`
-  background-color: #16171e;
-  color: ${colors.white};
-  padding: 5px 10px;
-  font-size: 11px;
-  display: flex;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`
-
-const BoxIcon = styled.a`
-  text-decoration: none;
-  color: inherit;
-  cursor: pointer;
-  display: block;
-  margin-left: ${margin}px;
-`
-
-const WindowBarSide = styled.div`
-  display: flex;
-  gap: ${margin};
 `
 
 const selectActive = (state) => state.active
@@ -76,19 +51,11 @@ const Component = (props) => {
       onClick={() => dispatch(setActive(id))}
       onMouseOver={() => setActive(id)}
     >
-      <WindowBar>
-        <WindowBarSide>
-          <span>{type}</span>
-        </WindowBarSide>
-        <WindowBarSide>
-          <BoxIcon
-            onClick={() => dispatch(float ? setBoxStack(id) : setBoxFloat(id))}
-          >
-            
-          </BoxIcon>
-          <BoxIcon onClick={() => dispatch(removeBox(id))}></BoxIcon>
-        </WindowBarSide>
-      </WindowBar>
+      <div className={active === id ? 'title-bar' : 'inactive-title-bar'}>
+        {active === id && <button aria-label="Close" class="close" onClick={() => dispatch(removeBox(id))}></button>}
+        <h1 class="title">{type}</h1>
+        {active === id && <button aria-label="Resize" class="resize" onClick={() => dispatch(float ? setBoxStack(id) : setBoxFloat(id))}></button>}
+      </div>
       <ContentWrapper>{getAppContent(type)}</ContentWrapper>
     </Box>
   )
