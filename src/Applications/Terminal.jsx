@@ -13,7 +13,6 @@ const Component = () => (
 const config = {
   mode: 'full',
   name: 'Terminal',
-  noTitleBar: true
 }
 
 const module = { Component, config }

@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { appTypes } from './appHelpers'
+import { addBox } from './store'
 
 const Clock = () => {
   const [time, setTime] = useState(new Date())
+  const dispatch = useDispatch()
 
   useEffect(() => {
     setInterval(() => {
@@ -10,7 +14,7 @@ const Clock = () => {
   }, [])
 
   return (
-    <span>
+    <span onClick={() => dispatch(addBox(appTypes.Calendar))}>
       {time.toLocaleString()}
     </span>
   )

@@ -7,7 +7,7 @@ const Iframe = styledComponents.iframe`
 `
 
 const Component = () => (
-  <Iframe src="https://vscode.dev/" title="vs code" seamless />
+  <Iframe src="http://localhost:8000/?tkn=TOKEN" title="vs code" seamless />
 )
 
 const config = {
