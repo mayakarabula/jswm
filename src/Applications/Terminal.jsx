@@ -10,4 +10,12 @@ const Component = () => (
   <Iframe src="http://localhost:8080" title="terminal" seamless />
 )
 
-export default Component
+const config = {
+  mode: 'full',
+  name: 'Terminal',
+  noTitleBar: true
+}
+
+const module = { Component, config }
+
+export default module

@@ -1,7 +1,7 @@
-import e from 'cors'
 import { findIndex, find, last } from 'lodash-es'
 import { v4 as uuid } from 'uuid'
 import { config } from './config'
+import * as Applications from './Applications'
 
 const { containerHeight, containerWidth, split } = config
 
@@ -9,7 +9,7 @@ const initialState = {
   boxes: [],
   active: null,
   split: split,
-  layer: 0,
+  layer: 1,
   order: []
 }
 
@@ -24,7 +24,8 @@ const types = {
   SET_BOX_STACK: 'SET_BOX_STACK',
   MOVE_BOX: 'MOVE_BOX',
   RESIZE_BOX: 'RESIZE_BOX',
-  SET_LAYER: 'SET_LAYER'
+  SET_LAYER: 'SET_LAYER',
+  SET_TITLEBAR: 'SET_TITLEBAR'
 }
 
 export const addBox = (appType) => ({
@@ -78,6 +79,11 @@ export const resizeBox = (resize) => ({
 export const setLayer = (layer) => ({
   type: types.SET_LAYER,
   layer
+})
+
+export const setTitlebar = (titlebar) => ({
+  type: types.SET_TITLEBAR,
+  titlebar
 })
 
 const setPositions = ({ boxes, split, layer, order }) => {
@@ -262,30 +268,50 @@ export const reducer = (state = initialState, action) => {
 
     case types.ADD_BOX:
       const newId = 'box' + uuid().split('-')[0]
-      order = [...order, newId]
 
-      boxes = boxes.map(box => {
-        delete box.modHeight
-        return box
-      })
+      console.log(action.appType)
+      console.log(
+        Applications
+      )
+
+      const { config } = Applications[action.appType]
+
+      let box = {
+        id: newId,
+        type: action.appType,
+        layer: state.layer,
+        noTitleBar: config.noTitleBar
+      }
+
+      if (config.mode === 'float') {
+        box = {
+          ...box,
+          float: true,
+          top: config.top || Math.floor(containerHeight / 4),
+          left: config.left || Math.floor(containerWidth / 4),
+          width: config.width || Math.floor(containerWidth / 2),
+          height: config.height || Math.floor(containerHeight / 2),
+        }
+      } else {
+        order = [...order, newId]
+
+        boxes = boxes.map(box => {
+          delete box.modHeight
+          return box
+        })
+      }
 
       boxes = setPositions({
         boxes: [
           ...boxes,
-          {
-            id: newId,
-            type: action.appType,
-            layer: state.layer,
-          },
+          box,
         ],
         split,
         layer,
         order
       })
 
-      if (!active) {
-        active = newId
-      }
+      active = newId
 
       return {
         ...state,
@@ -295,7 +321,9 @@ export const reducer = (state = initialState, action) => {
       }
 
     case types.REMOVE_BOX:
-      order = order.filter((id) => id !== action.id)
+      const killId = action.id || active
+      order = order.filter((id) => id !== killId)
+
       boxes = setPositions({
           boxes: boxes.filter((box) => box.id !== action.id),
           split,
@@ -310,7 +338,9 @@ export const reducer = (state = initialState, action) => {
       }
 
     case types.SET_BOX_FLOAT:
-      index = boxes.findIndex((box) => box.id === action.id)
+      const floatId = action.id || active
+      index = boxes.findIndex((box) => box.id === floatId)
+      
       boxes[index].float = true
       boxes[index].top = Math.floor(containerHeight / 4)
       boxes[index].left = Math.floor(containerWidth / 4)
@@ -325,7 +355,9 @@ export const reducer = (state = initialState, action) => {
       }
 
     case types.SET_BOX_STACK:
-      index = boxes.findIndex((box) => box.id === action.id)
+      const stackId = action.id || active
+
+      index = boxes.findIndex((box) => box.id === stackId)
       boxes[index].float = false
       order = [...order, boxes[index].id]
 
@@ -348,6 +380,16 @@ export const reducer = (state = initialState, action) => {
       return {
         ...state,
         active: boxes[index].id,
+      }
+
+    case types.SET_TITLEBAR:
+      index = findIndex(boxes, { id: active })
+
+      boxes[index].noTitleBar = action.titlebar
+
+      return {
+        ...state,
+        boxes: setPositions({ boxes, split, layer, order }),
       }
 
     default:

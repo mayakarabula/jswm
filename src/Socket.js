@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux';
 import { io } from "socket.io-client";
-import { resizeBox, setBoxMove, setNextActive, setPrevActive } from './store';
+import { removeBox, resizeBox, setBoxFloat, setBoxMove, setBoxStack, setLayer, setNextActive, setPrevActive, setTitlebar } from './store';
 
 const useSocketClient = () => {
   const dispatch = useDispatch()
@@ -27,6 +27,32 @@ const useSocketClient = () => {
       if (data === 'prev') {
         dispatch(setPrevActive())
       }
+    })
+
+    socket.on('float', data => {
+      if (data === 'true') {
+        dispatch(setBoxFloat())
+      }
+      if (data === 'false') {
+        dispatch(setBoxStack())
+      }
+    })
+
+    socket.on('kill', data => {
+      dispatch(removeBox())
+    })
+
+    socket.on('titlebar', data => {
+      if (data === 'true') {
+        dispatch(setTitlebar(false))
+      }
+      if (data === 'false') {
+        dispatch(setTitlebar(true))
+      }
+    })
+
+    socket.on('layer', data => {
+      dispatch(setLayer(+data))
     })
   })
 }

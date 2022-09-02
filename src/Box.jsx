@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { removeBox, setActive, setBoxFloat, setBoxStack } from './store'
 import { config } from './config'
-import { getAppContent } from './Applications'
+import { getAppContent } from './appHelpers'
 
 const { containerHeight, containerWidth } = config
 
@@ -51,11 +51,11 @@ const Component = (props) => {
       onClick={() => dispatch(setActive(id))}
       onMouseOver={() => setActive(id)}
     >
-      <div className={active === id ? 'title-bar' : 'inactive-title-bar'}>
+      {!props.box.noTitleBar && <div className={active === id ? 'title-bar' : 'inactive-title-bar'}>
         {active === id && <button aria-label="Close" class="close" onClick={() => dispatch(removeBox(id))}></button>}
         <h1 class="title">{type}</h1>
         {active === id && <button aria-label="Resize" class="resize" onClick={() => dispatch(float ? setBoxStack(id) : setBoxFloat(id))}></button>}
-      </div>
+      </div>}
       <ContentWrapper>{getAppContent(type)}</ContentWrapper>
     </Box>
   )

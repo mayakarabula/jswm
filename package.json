@@ -28,7 +28,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "PORT=1234 react-scripts start",
+    "start": "npm run frontentd & npm run daemon & npm run term & npm run server",
+    "frontentd": "PORT=1234 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

@@ -57,5 +57,12 @@ const Component = () => {
   return <Image url={image} />
 }
 
-export default Component
+const config = {
+  mode: 'float',
+  name: 'Image',
+}
+
+const module = { Component, config }
+
+export default module
 

@@ -10,4 +10,11 @@ const Component = () => (
   <Iframe src="https://vscode.dev/" title="vs code" seamless />
 )
 
-export default Component
+const config = {
+  mode: 'full',
+  name: 'Vscode'
+}
+
+const module = { Component, config }
+
+export default module
