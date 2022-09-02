@@ -1,4 +1,5 @@
 import styledComponents from 'styled-components'
+import { configVariables } from '../configVariables'
 
 const Iframe = styledComponents.iframe`
     border: 0;
@@ -7,7 +8,7 @@ const Iframe = styledComponents.iframe`
 `
 
 const Component = () => (
-  <Iframe src="http://localhost:8000/?tkn=TOKEN" title="vs code" seamless />
+  <Iframe src={`http://localhost:8000/?tkn=${configVariables.vsCode}`} title="vs code" seamless />
 )
 
 const config = {
