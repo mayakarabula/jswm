@@ -2,8 +2,8 @@
 
 [My post on this project](https://jakubkarabula.github.io/mysite/jswm.html)
 
-
 ## how to add cert and key for https
+
 https://dev.to/josuebustos/https-localhost-for-node-js-1p1k
 
 ## Intro
@@ -24,5 +24,7 @@ An alternative is to use apps that run alongside standard macOS window manager, 
 I have another idea. It's a bit cursed but it's quite pleasant to work with so far. I spent most of my time working with Firefox, terminal and nvim/vscode, sometimes I need to also take a look at images. And i like keyboard driven flows, tiling window management etc. What if I would be able to have terminal, file management, image viewing etc inside Firefox, just as another tab? This is what I called JSWM, Javascript based window manager that is basically a web app with simple implementations of window management, key bindings and apps like terminal (with ttyd) and image viewing. Most of other things like editing and file browsing I can do via the terminal.
 
 ## Screenshots
+
+![jswmc el lissitzky image](jswm_el.gif)
 
 ![screenshot](shot.png)
