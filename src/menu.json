@@ -1,0 +1,34 @@
+{
+  "apps": [
+    {
+      "name": "Terminal"
+    },
+    {
+      "name": "Calendar"
+    },
+    {
+      "name": "Vscode"
+    },
+    {
+      "name": "Image"
+    }
+  ],
+  "uxn": [
+    {
+      "name": "Noodle"
+    },
+    {
+      "name": "Piano"
+    }
+  ],
+  "gb": [
+    {
+      "name": "Tetris"
+    }
+  ],
+  "x11": [
+    {
+      "name": "xclock"
+    }
+  ]
+}

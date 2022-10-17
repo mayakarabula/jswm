@@ -10,7 +10,7 @@ const initialState = {
   active: null,
   split: split,
   layer: 1,
-  order: []
+  order: [],
 }
 
 const types = {
@@ -25,12 +25,13 @@ const types = {
   MOVE_BOX: 'MOVE_BOX',
   RESIZE_BOX: 'RESIZE_BOX',
   SET_LAYER: 'SET_LAYER',
-  SET_TITLEBAR: 'SET_TITLEBAR'
+  SET_TITLEBAR: 'SET_TITLEBAR',
 }
 
-export const addBox = (appType) => ({
+export const addBox = (appType, input) => ({
   type: types.ADD_BOX,
   appType,
+  input,
 })
 
 export const removeBox = (id) => ({
@@ -66,9 +67,11 @@ export const setBoxStack = (id) => ({
   id,
 })
 
-export const setBoxMove = (move) => ({
+export const setBoxMove = (move, left, top) => ({
   type: types.MOVE_BOX,
   move,
+  left,
+  top,
 })
 
 export const resizeBox = (resize) => ({
@@ -78,28 +81,30 @@ export const resizeBox = (resize) => ({
 
 export const setLayer = (layer) => ({
   type: types.SET_LAYER,
-  layer
+  layer,
 })
 
 export const setTitlebar = (titlebar) => ({
   type: types.SET_TITLEBAR,
-  titlebar
+  titlebar,
 })
 
 const setPositions = ({ boxes, split, layer, order }) => {
-
-  console.log({ layer, order, boxes })
-console.log(order.map(id => find(boxes, { id })))
-
-  const stackBoxes = order.map(id => find(boxes, { id })).filter((box) => box.layer === layer)
+  const stackBoxes = order
+    .map((id) => find(boxes, { id }))
+    .filter((box) => box.layer === layer)
 
   if (stackBoxes.length > 0) {
     const left = split
-    const boxesWithModHeight = stackBoxes.filter(box => box.modHeight)
-    const modHeights = boxesWithModHeight.reduce((prev, curr) => prev + curr.modHeight, 0)
-    const avgHeight = Math.floor((containerHeight - modHeights) / (stackBoxes.length - boxesWithModHeight.length - 1))
-
-    console.log({ modHeights, boxesWithModHeight, avgHeight })
+    const boxesWithModHeight = stackBoxes.filter((box) => box.modHeight)
+    const modHeights = boxesWithModHeight.reduce(
+      (prev, curr) => prev + curr.modHeight,
+      0
+    )
+    const avgHeight = Math.floor(
+      (containerHeight - modHeights) /
+        (stackBoxes.length - boxesWithModHeight.length - 1)
+    )
 
     let positionY = 0
 
@@ -126,9 +131,9 @@ console.log(order.map(id => find(boxes, { id })))
 }
 
 const swapArrayElements = (array, x, y) => {
-  const temp = array[y];
-  array[y] = array[x];
-  array[x] = temp;
+  const temp = array[y]
+  array[y] = array[x]
+  array[x] = temp
 
   return [...array]
 }
@@ -161,15 +166,24 @@ export const reducer = (state = initialState, action) => {
       return {
         ...state,
         layer,
-        boxes
+        boxes,
       }
 
     case types.RESIZE_BOX:
       index = findIndex(boxes, (box) => box.id === active)
-      const stackBoxes = order.map(id => find(boxes, { id })).filter((box) => box.layer === layer)
-      const boxesWithModHeight = stackBoxes.filter(box => box.modHeight)
-      const modHeights = boxesWithModHeight.reduce((prev, curr) => prev + curr.modHeight, 0)
-      const avgHeight = () => Math.floor((containerHeight - modHeights) / (stackBoxes.length - boxesWithModHeight.length -1))
+      const stackBoxes = order
+        .map((id) => find(boxes, { id }))
+        .filter((box) => box.layer === layer)
+      const boxesWithModHeight = stackBoxes.filter((box) => box.modHeight)
+      const modHeights = boxesWithModHeight.reduce(
+        (prev, curr) => prev + curr.modHeight,
+        0
+      )
+      const avgHeight = () =>
+        Math.floor(
+          (containerHeight - modHeights) /
+            (stackBoxes.length - boxesWithModHeight.length - 1)
+        )
 
       const freeUpSpace = () => {
         if (stackBoxes.length - boxesWithModHeight.length === 2) {
@@ -209,9 +223,12 @@ export const reducer = (state = initialState, action) => {
             boxes[index].modHeight = avgHeight() - 1
           }
         }
-        if (action.resize === 'down' && stackBoxes.length > 2) {  
+        if (action.resize === 'down' && stackBoxes.length > 2) {
           if (boxes[index].modHeight) {
-            if (avgHeight() > (stackBoxes.length - boxesWithModHeight.length - 1) * 3) {
+            if (
+              avgHeight() >
+              (stackBoxes.length - boxesWithModHeight.length - 1) * 3
+            ) {
               boxes[index].modHeight += 1
             }
           } else {
@@ -231,31 +248,38 @@ export const reducer = (state = initialState, action) => {
       index = findIndex(boxes, (box) => box.id === active)
 
       if (boxes[index].float) {
-        if (action.move === 'left') {
-          boxes[index].left -= 1
-        }
-        if (action.move === 'right') {
-          boxes[index].left += 1
-        }
-        if (action.move === 'up') {
-          boxes[index].top -= 1
-        }
-        if (action.move === 'down') {
-          boxes[index].top += 1
+        if (action.move === 'exact') {
+          boxes[index].left = action.left
+          boxes[index].top = action.top
+          boxes[index].exact = true
+        } else {
+          if (action.move === 'left') {
+            boxes[index].left -= 1
+          }
+          if (action.move === 'right') {
+            boxes[index].left += 1
+          }
+          if (action.move === 'up') {
+            boxes[index].top -= 1
+          }
+          if (action.move === 'down') {
+            boxes[index].top += 1
+          }
         }
       } else {
-        const orderIndex = findIndex(order, id => id === active)
+        const orderIndex = findIndex(order, (id) => id === active)
 
         if (action.move === 'left') {
           order = swapArrayElements(order, 0, orderIndex)
-
         } else if (action.move === 'right' && orderIndex === 0) {
           order = swapArrayElements(order, 0, 1)
-
         } else if (action.move === 'up' && orderIndex > 1) {
           order = swapArrayElements(order, orderIndex, orderIndex - 1)
-
-        } else if (action.move === 'down' && orderIndex > 0 && (orderIndex !== order.length - 1)) {
+        } else if (
+          action.move === 'down' &&
+          orderIndex > 0 &&
+          orderIndex !== order.length - 1
+        ) {
           order = swapArrayElements(order, orderIndex, orderIndex + 1)
         }
       }
@@ -269,10 +293,7 @@ export const reducer = (state = initialState, action) => {
     case types.ADD_BOX:
       const newId = 'box' + uuid().split('-')[0]
 
-      console.log(action.appType)
-      console.log(
-        Applications
-      )
+      console.log(action, Applications[action.appType])
 
       const { config } = Applications[action.appType]
 
@@ -280,7 +301,8 @@ export const reducer = (state = initialState, action) => {
         id: newId,
         type: action.appType,
         layer: state.layer,
-        noTitleBar: config.noTitleBar
+        noTitleBar: config.noTitleBar,
+        input: action.input,
       }
 
       if (config.mode === 'float') {
@@ -295,20 +317,17 @@ export const reducer = (state = initialState, action) => {
       } else {
         order = [...order, newId]
 
-        boxes = boxes.map(box => {
+        boxes = boxes.map((box) => {
           delete box.modHeight
           return box
         })
       }
 
       boxes = setPositions({
-        boxes: [
-          ...boxes,
-          box,
-        ],
+        boxes: [...boxes, box],
         split,
         layer,
-        order
+        order,
       })
 
       active = newId
@@ -325,28 +344,30 @@ export const reducer = (state = initialState, action) => {
       order = order.filter((id) => id !== killId)
 
       boxes = setPositions({
-          boxes: boxes.filter((box) => box.id !== action.id),
-          split,
-          layer,
-          order
+        boxes: boxes.filter((box) => box.id !== action.id),
+        split,
+        layer,
+        order,
       })
 
       return {
         ...state,
         boxes,
-        order
+        order,
       }
 
     case types.SET_BOX_FLOAT:
       const floatId = action.id || active
       index = boxes.findIndex((box) => box.id === floatId)
-      
+
+      console.log('float', containerHeight, containerWidth)
+
       boxes[index].float = true
       boxes[index].top = Math.floor(containerHeight / 4)
       boxes[index].left = Math.floor(containerWidth / 4)
       boxes[index].width = Math.floor(containerWidth / 2)
       boxes[index].height = Math.floor(containerHeight / 2)
-      order = order.filter(id => id !== boxes[index].id)
+      order = order.filter((id) => id !== boxes[index].id)
 
       return {
         ...state,

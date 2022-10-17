@@ -1,26 +1,37 @@
 import { useEffect } from 'react'
-import { useDispatch } from 'react-redux';
-import { io } from "socket.io-client";
-import { removeBox, resizeBox, setBoxFloat, setBoxMove, setBoxStack, setLayer, setNextActive, setPrevActive, setTitlebar } from './store';
+import { useDispatch } from 'react-redux'
+import { io } from 'socket.io-client'
+import {
+  addBox,
+  removeBox,
+  resizeBox,
+  setBoxFloat,
+  setBoxMove,
+  setBoxStack,
+  setLayer,
+  setNextActive,
+  setPrevActive,
+  setTitlebar,
+} from './store'
 
 const useSocketClient = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    const socket = io('http://localhost:8888');
+    const socket = io('http://localhost:8888')
 
-    socket.on('emit', data => console.log({ data }))
+    socket.on('emit', (data) => console.log({ data }))
 
-    socket.on('move', data => {
+    socket.on('move', (data) => {
       console.log('MOVEE')
       dispatch(setBoxMove(data))
     })
 
-    socket.on('resize', data => {
+    socket.on('resize', (data) => {
       dispatch(resizeBox(data))
     })
 
-    socket.on('focus', data => {
+    socket.on('focus', (data) => {
       if (data === 'next') {
         dispatch(setNextActive())
       }
@@ -29,7 +40,7 @@ const useSocketClient = () => {
       }
     })
 
-    socket.on('float', data => {
+    socket.on('float', (data) => {
       if (data === 'true') {
         dispatch(setBoxFloat())
       }
@@ -38,11 +49,11 @@ const useSocketClient = () => {
       }
     })
 
-    socket.on('kill', data => {
+    socket.on('kill', (data) => {
       dispatch(removeBox())
     })
 
-    socket.on('titlebar', data => {
+    socket.on('titlebar', (data) => {
       if (data === 'true') {
         dispatch(setTitlebar(false))
       }
@@ -51,11 +62,14 @@ const useSocketClient = () => {
       }
     })
 
-    socket.on('layer', data => {
+    socket.on('open', (data) => {
+      dispatch(addBox('Image', data))
+    })
+
+    socket.on('layer', (data) => {
       dispatch(setLayer(+data))
     })
   })
 }
 
 export default useSocketClient
-

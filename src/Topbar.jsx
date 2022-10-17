@@ -1,11 +1,9 @@
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
-import { appTypes } from './appHelpers'
 import { config } from './config'
-import {
-  addBox,
-} from './store'
+import { addBox } from './store'
 import Clock from './Clock'
+import menu from './menu.json'
 
 const { topBarHeight } = config
 
@@ -14,7 +12,7 @@ const Topbar = styled.div`
   left: 0;
   position: fixed;
   width: 100vw;
-height: ${topBarHeight}px;
+  height: ${topBarHeight}px;
   display: flex;
   z-index: 1000;
   background-color: white;
@@ -36,34 +34,33 @@ const Component = () => {
   return (
     <Topbar>
       <TopBarSide>
-      <details class="dropdown">
-        <summary class="dd-toggle">
-          Applications
-        </summary>
+        {Object.entries(menu).map(([key, apps]) => {
+          return (
+            <details className="dropdown">
+              <summary className="dd-toggle">{key}</summary>
 
-        <ul class="dd-menu">
-          {Object.values(appTypes).map(type => (
-            <li onClick={() => dispatch(addBox(type))}>{type}</li>
-          ))}
-        </ul>
-      </details>
-      <details>
-        <summary class="dd-toggle">
-          [ {layer} ]
-        </summary>
-      </details>
-    </TopBarSide>
+              <ul className="dd-menu">
+                {Object.values(apps).map((app) => (
+                  <li onClick={() => dispatch(addBox(app.name))}>{app.name}</li>
+                ))}
+              </ul>
+            </details>
+          )
+        })}
+
+        <details>
+          <summary className="dd-toggle">[ {layer} ]</summary>
+        </details>
+      </TopBarSide>
 
       <TopBarSide>
         <details>
-        <summary class="dd-toggle">
-          Hey Maya
-        </summary>
-      </details>
+          <summary className="dd-toggle">Hey Maya</summary>
+        </details>
         <details>
-        <summary class="dd-toggle">
-          <Clock/>
-        </summary>
+          <summary className="dd-toggle">
+            <Clock />
+          </summary>
         </details>
       </TopBarSide>
     </Topbar>

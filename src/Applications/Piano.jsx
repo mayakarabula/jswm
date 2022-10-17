@@ -10,4 +10,11 @@ const Component = () => (
   <Iframe src="http://localhost:2222/piano.html" title="piano" seamless />
 )
 
-export default Component
+const config = {
+  mode: 'float',
+  name: 'Piano',
+}
+
+const module = { Component, config }
+
+export default module

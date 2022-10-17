@@ -9,5 +9,11 @@ const Iframe = styledComponents.iframe`
 const Component = () => (
   <Iframe src="http://localhost:2222/noodle.html" title="noodle" seamless />
 )
+const config = {
+  mode: 'float',
+  name: 'Noodle',
+}
 
-export default Component
+const module = { Component, config }
+
+export default module
