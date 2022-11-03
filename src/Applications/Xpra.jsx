@@ -4,19 +4,14 @@ const Iframe = styledComponents.iframe`
     border: 0;
     width: 100%;
     height: 100%;
-    border-radius: 5px;
-    padding: 5px;
-    background: #282a36;
 `
 
 const Component = () => (
-  <Iframe src="http://localhost:8080" title="terminal" seamless />
+  <Iframe src="http://localhost:8080" title="Xpra" seamless />
 )
-
 const config = {
-  mode: 'full',
-  name: 'Terminal',
-  noTitleBar: true,
+  mode: 'float',
+  name: 'Xpra',
 }
 
 const module = { Component, config }

@@ -6,7 +6,7 @@ import {
   setBoxFloat,
   setBoxMove,
   setBoxStack,
-} from './store'
+} from './store/actions'
 import { config } from './config'
 import { getAppContent } from './appHelpers'
 import { useRef, useState } from 'react'
@@ -16,16 +16,6 @@ const { containerHeight, containerWidth } = config
 const getPosition = (box) => {
   if (!box.float) {
     return ''
-  }
-
-  if (box.exact) {
-    return `
-      position: fixed;
-      left: ${box.left}px;
-      top: ${box.top}px;
-      width: ${(box.width / containerWidth) * 100}%;
-      height: ${(box.height / containerHeight) * 100}%;
-    `
   }
 
   return `
@@ -41,8 +31,6 @@ const Box = styled.div`
   grid-area: ${(props) => props.area};
   display: ${(props) => (props.activeLayer ? 'flex' : 'none')};
   flex-direction: column;
-  border: 1px solid black;
-  background-color: white;
 
   ${(props) => getPosition(props.box)}
 
@@ -81,8 +69,11 @@ const Component = (props) => {
           dispatch(
             setBoxMove(
               'exact',
-              event.pageX - offsets.left,
-              event.pageY - offsets.top
+              ((event.pageX - offsets.left) / window.innerWidth) *
+                containerWidth,
+
+              ((event.pageY - offsets.top) / window.innerHeight) *
+                containerHeight
             )
           )
         }

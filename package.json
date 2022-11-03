@@ -25,6 +25,7 @@
     "socket.io-client": "^4.5.0",
     "styled": "^1.0.0",
     "styled-components": "^5.3.5",
+    "systeminformation": "^5.12.12",
     "ttyd": "^1.0.3",
     "uuid": "^8.3.2",
     "web-vitals": "^2.1.4"

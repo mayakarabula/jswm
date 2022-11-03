@@ -1,0 +1,79 @@
+:root {
+  --main-bg-color: #282b36;
+  --main-fg-color: #f8f8f2;
+}
+
+body {
+  font-size: 11px;
+}
+
+.dd-menu {
+  display: block;
+  color: var(--main-fg-color);
+  background: var(--main-bg-color);
+  border: 1px solid;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  top: 22px;
+}
+
+.dd-toggle {
+  color: #96cdfb;
+  background: var(--main-bg-color);
+  cursor: pointer;
+}
+
+.topbar {
+  color: var(--main-fg-color);
+  background: var(--main-bg-color);
+}
+
+.dd-menu li {
+  padding: 5px;
+  cursor: pointer;
+}
+
+.dd-toggle {
+  margin-right: 10px;
+}
+
+.inactive-title-bar,
+.title-bar {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  color: var(--main-fg-color);
+  background: #285577;
+  height: 20px;
+}
+
+.inactive-title-bar {
+  background-color: #555555;
+}
+
+.title {
+  font-size: 9px;
+}
+
+.close,
+.resize {
+  border: 0;
+  color: var(--main-fg-color);
+  background: #285577;
+  cursor: pointer;
+}
+
+.close::after {
+  display: block;
+  content: '✖';
+}
+
+.resize::after {
+  display: block;
+  content: '↹';
+}
+
+.dd-toggle::marker {
+  content: '';
+}

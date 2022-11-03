@@ -8,12 +8,16 @@ const Iframe = styledComponents.iframe`
 `
 
 const Component = () => (
-  <Iframe src={`http://localhost:8000/?tkn=${configVariables.vsCode}`} title="vs code" seamless />
+  <Iframe
+    src={`https://insiders.vscode.dev/tunnel/nifty-partridge`}
+    title="vs code"
+    seamless
+  />
 )
 
 const config = {
   mode: 'full',
-  name: 'Vscode'
+  name: 'Vscode',
 }
 
 const module = { Component, config }

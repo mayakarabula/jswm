@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { appTypes } from './appHelpers'
-import { addBox } from './store'
+import { addBox } from './store/actions'
 
 const Clock = () => {
   const [time, setTime] = useState(new Date())
@@ -21,4 +21,3 @@ const Clock = () => {
 }
 
 export default Clock
-

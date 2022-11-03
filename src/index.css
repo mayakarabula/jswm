@@ -3,7 +3,7 @@ body {
   font-family: 'FiraCode Nerd Font';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-image: url('./v.jpg');
+  /* background-image: url('./v.jpg'); */
   background-size: 100% 100%;
 }
 

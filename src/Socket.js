@@ -11,8 +11,9 @@ import {
   setLayer,
   setNextActive,
   setPrevActive,
+  setSystemInfo,
   setTitlebar,
-} from './store'
+} from './store/actions'
 
 const useSocketClient = () => {
   const dispatch = useDispatch()
@@ -68,6 +69,10 @@ const useSocketClient = () => {
 
     socket.on('layer', (data) => {
       dispatch(setLayer(+data))
+    })
+
+    socket.on('set_system_info', (data) => {
+      dispatch(setSystemInfo(data))
     })
   })
 }

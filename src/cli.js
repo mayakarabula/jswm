@@ -1,13 +1,14 @@
 const io = require('socket.io-client').io
 const readFileSync = require('fs').readFileSync
 const resolve = require('path').resolve
+const si = require('systeminformation')
 
 const space = process.argv[2]
 const command = process.argv[3]
 
 const socket = io('http://localhost:8888')
 
-const help = () => {
+const help = async () => {
   console.log(`JSWM CLI
 
 available commands:
@@ -51,6 +52,21 @@ if (space === 'move') {
 } else if (space === 'open') {
   const data = readFileSync(resolve(command)).toString('base64')
   socket.emit('event', ['open', data])
+} else if (space === 'system') {
+  const mem = si.mem()
+  const battery = si.battery()
+  const wifi = si.wifiNetworks()
+  const bluetooth = si.bluetoothDevices()
+
+  Promise.all([mem, battery, bluetooth]).then(([mem, battery]) => {
+    const systemInfo = {
+      mem,
+      battery,
+      bluetooth,
+    }
+
+    socket.emit('event', ['set_system_info', systemInfo])
+  })
 } else {
   help()
 }

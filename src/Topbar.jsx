@@ -1,21 +1,17 @@
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
-import { config } from './config'
-import { addBox } from './store'
+import { addBox } from './store/actions'
 import Clock from './Clock'
 import menu from './menu.json'
-
-const { topBarHeight } = config
+import { useEffect } from 'react'
 
 const Topbar = styled.div`
   top: 0;
   left: 0;
   position: fixed;
   width: 100vw;
-  height: ${topBarHeight}px;
   display: flex;
   z-index: 1000;
-  background-color: white;
   padding: 2px;
   border: 1px solid;
   justify-content: space-between;
@@ -27,12 +23,15 @@ const TopBarSide = styled.div`
 
 const selectLayer = (state) => state.layer
 
+const selectSystemInfo = (state) => state.systemInfo
+
 const Component = () => {
   const dispatch = useDispatch()
   const layer = useSelector(selectLayer)
+  const systemInfo = useSelector(selectSystemInfo)
 
   return (
-    <Topbar>
+    <Topbar className="topbar">
       <TopBarSide>
         {Object.entries(menu).map(([key, apps]) => {
           return (
@@ -55,11 +54,20 @@ const Component = () => {
 
       <TopBarSide>
         <details>
-          <summary className="dd-toggle">Hey Maya</summary>
+          <summary className="dd-toggle">
+            <Clock />
+          </summary>
+        </details>
+      </TopBarSide>
+
+      <TopBarSide>
+        <details>
+          <summary className="dd-toggle"> Hey Maya</summary>
         </details>
         <details>
           <summary className="dd-toggle">
-            <Clock />
+            {systemInfo?.battery?.percent} %
+            {systemInfo?.battery?.acConnected ? ' ﮣ' : ' ﮤ'}
           </summary>
         </details>
       </TopBarSide>

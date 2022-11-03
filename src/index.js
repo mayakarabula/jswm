@@ -1,12 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
-import '@sakun/system.css/dist/system.css'
+// import '@sakun/system.css/dist/system.css'
+import './unixnice.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
 import { createStore } from 'redux'
 import { Provider } from 'react-redux'
-import { reducer } from './store'
+import { reducer } from './store/store'
 
 const store = createStore(
   reducer,
