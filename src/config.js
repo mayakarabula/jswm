@@ -1,5 +1,5 @@
 export const config = {
-  margin: 3,
+  margin: 5,
   topBarHeight: 20,
 
   containerHeight: 48,

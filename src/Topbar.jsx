@@ -1,9 +1,10 @@
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
-import { addBox } from './store/actions'
+import { addBox, setLayer, setSystemInfo } from './store/actions'
 import Clock from './Clock'
 import menu from './menu.json'
 import { useEffect } from 'react'
+import { useState } from 'react'
 
 const Topbar = styled.div`
   top: 0;
@@ -30,6 +31,20 @@ const Component = () => {
   const layer = useSelector(selectLayer)
   const systemInfo = useSelector(selectSystemInfo)
 
+  const [weather, setWeather] = useState('')
+
+  useEffect(() => {
+    fetch('http://localhost:8888/system')
+      .then((res) => res.json())
+      .then((res) => dispatch(setSystemInfo(res)))
+
+    fetch('http://localhost:8888/weather')
+      .then((res) => res.text())
+      .then((res) => setWeather(res))
+  }, [dispatch])
+
+  console.log(layer)
+
   return (
     <Topbar className="topbar">
       <TopBarSide>
@@ -38,7 +53,7 @@ const Component = () => {
             <details className="dropdown">
               <summary className="dd-toggle">{key}</summary>
 
-              <ul className="dd-menu">
+              <ul className="dd-menu cyan">
                 {Object.values(apps).map((app) => (
                   <li onClick={() => dispatch(addBox(app.name))}>{app.name}</li>
                 ))}
@@ -48,24 +63,33 @@ const Component = () => {
         })}
 
         <details>
-          <summary className="dd-toggle">[ {layer} ]</summary>
-        </details>
-      </TopBarSide>
-
-      <TopBarSide>
-        <details>
-          <summary className="dd-toggle">
-            <Clock />
+          <summary className="dd-toggle orange">
+            {[0,1,2,3,4,5].map((index) => (
+              <span key={index} onClick={() => dispatch(setLayer(index))}>
+                {index === layer ? `[${layer}] ` : index + ' '}
+              </span>
+            ))}
           </summary>
         </details>
       </TopBarSide>
 
       <TopBarSide>
         <details>
-          <summary className="dd-toggle"> Hey Maya</summary>
+          <summary className="dd-toggle">
+            <Clock /> |
+          </summary>
         </details>
         <details>
-          <summary className="dd-toggle">
+          <summary className="dd-toggle yellow"> {weather} </summary>
+        </details>
+      </TopBarSide>
+
+      <TopBarSide>
+        <details>
+          <summary className="dd-toggle green"> Hey Maya</summary>
+        </details>
+        <details>
+          <summary className="dd-toggle purple">
             {systemInfo?.battery?.percent} %
             {systemInfo?.battery?.acConnected ? ' ﮣ' : ' ﮤ'}
           </summary>

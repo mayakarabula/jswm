@@ -14,7 +14,7 @@ const Clock = () => {
   }, [])
 
   return (
-    <span onClick={() => dispatch(addBox(appTypes.Calendar))}>
+    <span onClick={() => dispatch(addBox(appTypes.Calendar))} className="white">
       {time.toLocaleString()}
     </span>
   )

@@ -1,6 +1,9 @@
+#!/Users/mayakarabula/.nvm/versions/node/v18.1.0/bin/node
+
 const io = require('socket.io-client').io
 const readFileSync = require('fs').readFileSync
 const resolve = require('path').resolve
+const { writeFileSync } = require('fs')
 const si = require('systeminformation')
 
 const space = process.argv[2]
@@ -55,7 +58,6 @@ if (space === 'move') {
 } else if (space === 'system') {
   const mem = si.mem()
   const battery = si.battery()
-  const wifi = si.wifiNetworks()
   const bluetooth = si.bluetoothDevices()
 
   Promise.all([mem, battery, bluetooth]).then(([mem, battery]) => {
@@ -64,6 +66,8 @@ if (space === 'move') {
       battery,
       bluetooth,
     }
+
+    writeFileSync('system.json', JSON.stringify(systemInfo, null, 2))
 
     socket.emit('event', ['set_system_info', systemInfo])
   })

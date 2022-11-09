@@ -7,7 +7,7 @@ const Iframe = styledComponents.iframe`
 `
 
 const Component = () => (
-  <Iframe src="http://localhost:8080" title="Xpra" seamless />
+  <Iframe src="http://localhost:9988" title="Xpra" seamless />
 )
 const config = {
   mode: 'float',

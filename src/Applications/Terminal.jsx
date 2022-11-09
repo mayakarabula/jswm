@@ -7,6 +7,8 @@ const Iframe = styledComponents.iframe`
     border-radius: 5px;
     padding: 5px;
     background: #282a36;
+
+    box-sizing: border-box;
 `
 
 const Component = () => (

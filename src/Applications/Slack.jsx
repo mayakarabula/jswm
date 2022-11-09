@@ -8,12 +8,12 @@ const Iframe = styledComponents.iframe`
 `
 
 const Component = () => (
-  <Iframe src='https://spotify.com' title="Spotify" seamless />
+  <Iframe src="https://slack.com" title="Slack" seamless />
 )
 
 const config = {
   mode: 'full',
-  name: 'Spotify',
+  name: 'Slack',
 }
 
 const module = { Component, config }

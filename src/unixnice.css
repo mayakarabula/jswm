@@ -19,7 +19,7 @@ body {
 }
 
 .dd-toggle {
-  color: #96cdfb;
+  color: #8be9fd;
   background: var(--main-bg-color);
   cursor: pointer;
 }
@@ -76,4 +76,28 @@ body {
 
 .dd-toggle::marker {
   content: '';
+}
+
+.white {
+  color: var(--main-fg-color);
+}
+
+.purple {
+  color: #bd93f9;
+}
+
+.orange {
+  color: #ffb86c;
+}
+
+.green {
+  color: #50fa7b;
+}
+
+.cyan {
+  color: #8be9fd;
+}
+
+.yellow {
+  color: #f1fa8c;
 }

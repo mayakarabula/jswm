@@ -68,6 +68,8 @@ const useSocketClient = () => {
     })
 
     socket.on('layer', (data) => {
+      console.log(data)
+      
       dispatch(setLayer(+data))
     })
 

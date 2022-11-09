@@ -36,7 +36,7 @@ export const reducer = (state = initialState, action) => {
       return setActive(state, action)
 
     case types.SET_LAYER:
-      return setLayer(boxes, split, layer, order, state, action)
+      return setLayer(layer, action, boxes, split, order, state)
 
     case types.RESIZE_BOX:
       return resizeBox(boxes, active, order, layer, action, split, state)
